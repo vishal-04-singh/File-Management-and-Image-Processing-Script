@@ -1,68 +1,168 @@
-# File Management and Utility Script
+# File Management and Image Processing Tool
 
-This Python script provides various file management and utility functions, including copying, moving, renaming, resizing images, and more.
+A comprehensive file management application with both **GUI** and **command-line** interfaces, providing intuitive file operations, image processing, and download capabilities.
 
-## Features
+## 🚀 Features
 
-- Copy or move files
-- Copy or move files with segregation
-- Rename files
-- Resize images
-- Delete files
-- Create directories
-- Remove empty directories
-- (Commented out features: Download files, Get Google Maps image links)
+### Core File Operations
+- **Copy/Move files** with pattern matching
+- **File segregation** into custom folder structures
+- **Batch file renaming** with preview
+- **Smart file deletion** with pattern matching
+- **Directory management** (create/remove)
 
-## Dependencies
+### Image Processing
+- **Batch image resizing** with aspect ratio preservation
+- **Preview functionality** before processing
+- **Minimum size requirements** enforcement
+- Support for multiple image formats (JPG, PNG, BMP, GIF, TIFF, WebP)
 
-This script requires the following Python modules:
+### Download Manager
+- **URL-based file downloads**
+- **Google Drive integration** (with gdown)
+- **Batch download capabilities**
+- **Progress tracking** and error handling
 
-- os (built-in)
-- shutil (built-in)
-- PIL (Python Imaging Library)
-- BeautifulSoup4
-- urllib (built-in)
-- gdown
-- pyautogui
-- threading (built-in)
+### User Interface Options
+- **Modern GUI** with tabbed interface (tkinter-based)
+- **Command-line interface** for automation/scripting
+- **Cross-platform compatibility** (Windows, macOS, Linux)
 
-You can install the required third-party dependencies using pip:
+## 📦 Installation
 
-```
-pip install Pillow beautifulsoup4 gdown pyautogui
-```
+### Prerequisites
+- Python 3.7+ required
+- tkinter (usually included with Python)
 
-## Usage
-
-1. Ensure all dependencies are installed.
-2. Run the script using Python:
-
-```
-python script_name.py
+### Install Dependencies
+```bash
+pip install -r requirements.txt
 ```
 
-3. Follow the interactive prompts to choose and execute desired operations.
+**Optional dependencies:**
+- `Pillow` - for image processing
+- `beautifulsoup4` + `requests` - for web downloads  
+- `gdown` - for Google Drive downloads
+- `pyautogui` - for Google Maps integration (CLI only)
 
-## Functions
+## 🖥️ Usage
 
-- `copyORmove()`: Copy or move files based on user input.
-- `copyORmoveANDsegregate()`: Copy or move files with custom folder segregation.
-- `rename()`: Rename files based on user input.
-- `resize()`: Resize images to meet minimum width and height requirements.
-- `delete_files()`: Delete specified files from a given directory.
-- `Mkdir()`: Create new directories based on user input.
-- `Rmdir()`: Remove empty directories recursively.
-- `asking_query()`: Main function to handle user interaction and function calls.
+### GUI Application (Recommended)
+Launch the modern graphical interface:
 
-(Commented out functions: `download()`, `maps()`)
+```bash
+python3 gui_main.py
+```
 
-## Note
+#### GUI Features:
+- **File Operations Tab**: Copy/move files with optional segregation
+- **Image Processing Tab**: Batch resize with preview
+- **File Management Tab**: Rename, delete, and directory operations
+- **Download Tab**: URL downloads and Google Drive integration
+- **Real-time Progress**: Live feedback and error reporting
 
-- The script operates interactively, prompting the user for inputs such as file names, paths, and operations to perform.
-- Some features (download and Google Maps image links) are currently commented out in the main execution flow.
-- Use caution with functions like `delete_files()` and `Rmdir()` as they can permanently remove data.
+### Command Line Interface
+For automation and scripting:
 
-## Contributing
+```bash
+python3 file_manager_cli.py
+```
 
-If you'd like to contribute to this project, please fork the repository and submit a pull request with your proposed changes.
+Interactive menu with options:
+- (a) Copy files
+- (b) Move files  
+- (c) Rename files
+- (d) Resize images
+- (f) Delete files
+- (g) Create directories
+- (h) Remove empty directories
+
+## 📋 GUI Usage Guide
+
+### File Operations
+1. Select **Copy** or **Move** operation
+2. Choose source and destination directories
+3. Enter file patterns (one per line)
+4. For segregation: Enable checkbox and specify folder mappings
+5. Click **Execute Operation**
+
+### Image Processing
+1. Select directory containing images
+2. Set minimum width/height requirements
+3. Click **Preview Changes** to see what will be modified
+4. Click **Resize Images** to apply changes
+
+### File Management
+1. **Rename**: Enter `old_path[TAB]new_name` pairs
+2. **Delete**: Select directory and enter file patterns
+3. **Directories**: Create new or remove empty directories
+
+### Downloads
+1. Set destination directory
+2. Enter `URL[TAB]filename` pairs
+3. Click **Download Files**
+
+## 🔧 Technical Details
+
+### File Structure
+- `gui_main.py` - Main GUI application
+- `file_operations.py` - Core file management logic
+- `image_processor.py` - Image processing operations
+- `download_manager.py` - Download functionality
+- `file_manager_cli.py` - Original CLI script
+- `requirements.txt` - Python dependencies
+
+### Key Features
+- **Threading**: Non-blocking operations prevent GUI freezing
+- **Error Handling**: Comprehensive error reporting with user-friendly messages
+- **Progress Tracking**: Real-time feedback for all operations
+- **Input Validation**: Prevents common user errors
+- **Cross-platform**: Works on Windows, macOS, and Linux
+
+## ⚠️ Safety Features
+
+- **Confirmation dialogs** for destructive operations
+- **Preview functionality** for image resize operations
+- **Detailed logging** of all operations
+- **Error recovery** with partial operation completion
+- **Path validation** before operations
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is open source. Please see the repository for license details.
+
+## 🐛 Troubleshooting
+
+### Common Issues
+- **"tkinter not available"**: Install `python3-tk` package
+- **"PIL not available"**: Install with `pip install Pillow`
+- **Download errors**: Check internet connection and install `requests beautifulsoup4`
+
+### Performance Tips
+- For large file operations, use smaller batch sizes
+- Image processing works best with SSD storage
+- Network downloads depend on connection speed
+
+## 📈 Changelog
+
+### v2.0.0 - GUI Implementation
+- Added modern tkinter-based GUI
+- Refactored code into modular components
+- Added progress tracking and error handling
+- Implemented preview functionality
+- Added threaded operations for better responsiveness
+
+### v1.0.0 - Original CLI Version
+- Basic file operations via command line
+- Image resize functionality
+- Directory management
+- Download capabilities
 
