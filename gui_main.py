@@ -13,6 +13,7 @@ try:
     from file_operations import FileOperations
     from image_processor import ImageProcessor
     from download_manager import DownloadManager
+    from drag_drop import FileDropArea, install_drag_drop_support
 except ImportError as e:
     messagebox.showerror("Import Error", f"Failed to import modules: {e}")
     exit(1)
@@ -31,6 +32,13 @@ class FileManagerGUI:
         self.file_ops = FileOperations(progress_callback=self.update_progress)
         self.image_processor = ImageProcessor(progress_callback=self.update_progress)
         self.download_manager = DownloadManager(progress_callback=self.update_progress)
+        
+        # Check for enhanced drag and drop support
+        self.has_enhanced_dnd = install_drag_drop_support()
+        if self.has_enhanced_dnd:
+            self.update_progress("✓ Enhanced drag and drop support available")
+        else:
+            self.update_progress("ℹ Basic drag and drop support (click to browse)")
         
         # Setup UI
         self.setup_ui()
@@ -117,6 +125,21 @@ class FileManagerGUI:
         self.pattern_text = scrolledtext.ScrolledText(pattern_frame, height=6, width=50)
         self.pattern_text.pack(fill='both', expand=True, pady=5)
         
+        # Add drag and drop area for file patterns
+        def on_files_dropped(file_path):
+            filename = os.path.basename(file_path)
+            # Extract pattern (filename without extension + '.')
+            pattern = os.path.splitext(filename)[0] + '.'
+            current_text = self.pattern_text.get("1.0", "end-1c")
+            if current_text.strip():
+                self.pattern_text.insert("end", f"\n{pattern}")
+            else:
+                self.pattern_text.insert("1.0", pattern)
+            self.update_progress(f"Added pattern: {pattern}")
+        
+        self.file_drop_area = FileDropArea(pattern_frame, on_files_dropped, 
+                                         "Drop files here to add patterns")
+        
         # Segregation frame (initially hidden)
         self.seg_config_frame = ttk.LabelFrame(scrollable_frame, text="Segregation Configuration", padding=10)
         
@@ -158,6 +181,20 @@ class FileManagerGUI:
                   command=lambda: self.browse_directory(self.image_dir_var)).grid(row=0, column=2, padx=5, pady=5)
         
         dir_frame.columnconfigure(1, weight=1)
+        
+        # Add drag and drop for image directory
+        def on_image_files_dropped(file_path):
+            if os.path.isfile(file_path):
+                # If a file is dropped, use its directory
+                directory = os.path.dirname(file_path)
+            else:
+                # If a directory is dropped, use it directly
+                directory = file_path
+            self.image_dir_var.set(directory)
+            self.update_progress(f"Set image directory: {directory}")
+        
+        self.image_drop_area = FileDropArea(dir_frame, on_image_files_dropped,
+                                          "Drop images or folder here")
         
         # Size settings
         size_frame = ttk.LabelFrame(frame, text="Minimum Size Requirements", padding=10)

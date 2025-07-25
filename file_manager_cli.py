@@ -1,10 +1,42 @@
 import os
 import shutil
-import PIL.Image
-from bs4 import BeautifulSoup
-import urllib.request
-import gdown
-import pyautogui
+try:
+    import PIL.Image
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+    print("Warning: PIL (Pillow) not available. Image resize functionality disabled.")
+
+try:
+    from bs4 import BeautifulSoup
+    BEAUTIFULSOUP_AVAILABLE = True
+except ImportError:
+    BEAUTIFULSOUP_AVAILABLE = False
+
+try:
+    import urllib.request
+    URLLIB_AVAILABLE = True
+except ImportError:
+    URLLIB_AVAILABLE = False
+
+try:
+    import gdown
+    GDOWN_AVAILABLE = True
+except ImportError:
+    GDOWN_AVAILABLE = False
+
+try:
+    import pyautogui
+    PYAUTOGUI_AVAILABLE = True
+except ImportError:
+    PYAUTOGUI_AVAILABLE = False
+
+try:
+    import requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+
 import threading
 
 def copyORmove():
@@ -118,6 +150,10 @@ def rename():
             pass
 
 def resize():
+    if not PIL_AVAILABLE:
+        print("Error: PIL (Pillow) is required for image resizing. Please install with: pip install Pillow")
+        return
+        
     listoffilepath = []
     target = input('Enter the target folder:\n>>').replace('"','')
     W = int(input('minimum width should be:\n>>'))
@@ -171,6 +207,11 @@ def resize():
 
 
 def download():
+    if not (URLLIB_AVAILABLE and REQUESTS_AVAILABLE and BEAUTIFULSOUP_AVAILABLE):
+        print("Error: Download functionality requires urllib, requests, and beautifulsoup4.")
+        print("Please install with: pip install requests beautifulsoup4")
+        return
+    
     a = []
     link_and_filename = []
     for i in range(100000):
@@ -194,10 +235,13 @@ def download():
                 separate=stripped_line.split("*#@")
                 filename = separate[1]
                 if "drive.google.com" in separate[0]:
-                    img_url = 'https://drive.google.com/uc?id='+separate[0].split('/')[5]
-                    gdown.download(img_url.strip(), dest + '\\' + filename, quiet=False)
-                    print(filename + " downloaded successfully !")
-                    img_url = ""
+                    if GDOWN_AVAILABLE:
+                        img_url = 'https://drive.google.com/uc?id='+separate[0].split('/')[5]
+                        gdown.download(img_url.strip(), dest + '\\' + filename, quiet=False)
+                        print(filename + " downloaded successfully !")
+                        img_url = ""
+                    else:
+                        print(f"Error: gdown required for Google Drive downloads: {filename}")
                 elif ".jpg" in separate[0] or ".png" in separate[0] or ".jpeg" in separate[0] or ".webp" in separate[0] or "duckduckgo" in separate[0] or "flickr" not in separate[0]:
                     img_url=separate[0]
                     print("if")
@@ -286,6 +330,11 @@ def Rmdir():
                 pass  
 
 def maps():
+    if not PYAUTOGUI_AVAILABLE:
+        print("Error: pyautogui is required for Google Maps functionality.")
+        print("Please install with: pip install pyautogui")
+        return
+        
     file = open("google_maps_image_links.txt","w")
     i = input('hover the mouse on next button and press Enter')
     nextx,nexty = pyautogui.position()
@@ -322,34 +371,100 @@ def maps():
 
 def asking_query():
     global Operation
-    Query = input('What do you want to do? \n(a)copy           (b)move                 (c)rename  \n(d)resize         (e)download files       (f)delete files\n(g)make folders   (h)remove empty folders (i)get google maps image links\n(j)quit \n>>').lower()
+    
+    # Display available functionality based on dependencies
+    available_features = []
+    unavailable_features = []
+    
+    if PIL_AVAILABLE:
+        available_features.append("(d) resize images")
+    else:
+        unavailable_features.append("(d) resize images [requires PIL/Pillow]")
+    
+    if URLLIB_AVAILABLE and REQUESTS_AVAILABLE and BEAUTIFULSOUP_AVAILABLE:
+        available_features.append("(e) download files")
+    else:
+        unavailable_features.append("(e) download files [requires requests/beautifulsoup4]")
+    
+    if PYAUTOGUI_AVAILABLE:
+        available_features.append("(i) get google maps image links")
+    else:
+        unavailable_features.append("(i) get google maps image links [requires pyautogui]")
+    
+    # Always available features
+    core_features = [
+        "(a) copy", "(b) move", "(c) rename",
+        "(f) delete files", "(g) make folders", "(h) remove empty folders"
+    ]
+    
+    print("\nFile Management & Image Processing Tool")
+    print("=" * 45)
+    print("What do you want to do?")
+    print()
+    print("Core Features (always available):")
+    for feature in core_features:
+        print(f"  {feature}")
+    print()
+    
+    if available_features:
+        print("Additional Features (dependencies available):")
+        for feature in available_features:
+            print(f"  {feature}")
+        print()
+    
+    if unavailable_features:
+        print("Unavailable Features (missing dependencies):")
+        for feature in unavailable_features:
+            print(f"  {feature}")
+        print()
+    
+    print("(j) quit")
+    print()
+    
+    Query = input('>> ').lower()
+    
     if Query == 'c':
         rename() 
     elif Query == 'd':
-        resize()
+        if PIL_AVAILABLE:
+            resize()
+        else:
+            print("Error: PIL (Pillow) is required for image resizing.")
+            print("Install with: pip install Pillow")
+            asking_query()
     elif Query == 'a' or Query == 'b':
         if Query == 'a':
           Operation = 'copy'
         else:
           Operation = 'move'
         prompt = input('Do you want any segregation? (Y/N):  ')
-        if prompt == 'y':
+        if prompt.lower() == 'y':
            copyORmoveANDsegregate()
-        elif prompt == 'n':
+        elif prompt.lower() == 'n':
            copyORmove()
         else:
             print('sorry I can not understand')
             asking_query()
-    # elif Query == 'e':
-    #     download() 
+    elif Query == 'e':
+        if URLLIB_AVAILABLE and REQUESTS_AVAILABLE and BEAUTIFULSOUP_AVAILABLE:
+            download()
+        else:
+            print("Error: Download functionality requires urllib, requests, and beautifulsoup4.")
+            print("Install with: pip install requests beautifulsoup4")
+            asking_query()
     elif Query == 'f':
         delete_files()
     elif Query == 'g':
         Mkdir()
     elif Query == 'h':
         Rmdir()
-    # elif Query == 'i':
-    #     maps()
+    elif Query == 'i':
+        if PYAUTOGUI_AVAILABLE:
+            maps()
+        else:
+            print("Error: pyautogui is required for Google Maps functionality.")
+            print("Install with: pip install pyautogui")
+            asking_query()
     elif Query == 'j':
         print('thank you!')
     else:
