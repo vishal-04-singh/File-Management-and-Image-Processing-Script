@@ -47,6 +47,19 @@ pip install -r requirements.txt
 
 ## 🖥️ Usage
 
+### Quick Start (Recommended)
+Use the launcher script for easy startup with dependency checking:
+
+```bash
+python3 launcher.py
+```
+
+The launcher will:
+- Check Python version compatibility
+- Verify required and optional dependencies  
+- Allow you to choose between GUI and CLI interfaces
+- Provide installation guidance for missing dependencies
+
 ### GUI Application (Recommended)
 Launch the modern graphical interface:
 
@@ -105,12 +118,15 @@ Interactive menu with options:
 ## 🔧 Technical Details
 
 ### File Structure
+- `launcher.py` - Smart launcher with dependency checking
 - `gui_main.py` - Main GUI application
 - `file_operations.py` - Core file management logic
 - `image_processor.py` - Image processing operations
 - `download_manager.py` - Download functionality
-- `file_manager_cli.py` - Original CLI script
+- `drag_drop.py` - Drag and drop support components
+- `file_manager_cli.py` - Original CLI script (enhanced)
 - `requirements.txt` - Python dependencies
+- `gui_mockup.py` - Visual demonstration of GUI interface
 
 ### Key Features
 - **Threading**: Non-blocking operations prevent GUI freezing
